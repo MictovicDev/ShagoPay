@@ -67,18 +67,19 @@ class UserSerializer(serializers.ModelSerializer):
         password = validated_data.pop('password')
         user = User.objects.create(**validated_data)
         user.set_password(password)
+        user.is_active = True
         user.save()
         return user
      
      def validate_password(self,attrs):
         if len(attrs) < 8:
           raise serializers.ValidationError("Password is too short.")
-        if not re.search(r"[A-Z]", attrs):
-            raise serializers.ValidationError("Password Should contain a capital letter.")
+        # if not re.search(r"[A-Z]", attrs):
+        #     raise serializers.ValidationError("Password Should contain a capital letter.")
         if not re.search(r"[a-z]", attrs):
            raise serializers.ValidationError("Password should contain a lower letter.")
         if not re.search(r"\d", attrs):
            raise serializers.ValidationError("Password should contain a digit.")
-        if not re.search(r"[!@#$%^&*]", attrs):
-           raise serializers.ValidationError("Password should have a special character.")
+        # if not re.search(r"[!@#$%^&*]", attrs):
+        #    raise serializers.ValidationError("Password should have a special character.")
         return attrs

@@ -4,14 +4,27 @@ from authentication.models import User
 # Create your models here.
 
 
+
+
 class Wallet(models.Model):
     owner = models.OneToOneField(User, on_delete=models.CASCADE)
-    balance = models.CharField(max_length=250)
+    balance = models.PositiveBigIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
 
 
     def __str__(self):
         return self.owner.__str__()
+    
+
+class FundWallet(models.Model):
+    amount = models.PositiveBigIntegerField(default=100)
+    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.wallet} Funded {self.amount} "
+
+
     
 class WalletTransactions(models.Model):
 
