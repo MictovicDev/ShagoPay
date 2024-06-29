@@ -4,5 +4,6 @@ from .import views
 
 
 urlpatterns = [
-   path('fund/', views.FundWalletView.as_view(), name="fundwallet")
+   path('fund', views.FundWalletView.as_view(), name="fundwallet"),
+   path('transfer', views.B2BTransferView.as_view(), name="transfer")
 ]

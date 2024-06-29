@@ -5,10 +5,28 @@ from .models import FundWallet
 # class CustomDataSerializer(serializers.Serializer):
 #     email = serializers.EmailField()
    
+{
+"serviceCode" : "WBV",
+"amount" : "100",
+"bin": "058",
+"bank_account":"0000000000",
+"bank_name" : "GT Bank"
 
+}
 
 class FundWalletSerializer(serializers.Serializer):
+    transaction_type = serializers.CharField()
     email = serializers.EmailField()
     amount = serializers.IntegerField()
+
+
+class B2BTranferSerializer(serializers.Serializer):
+    serviceCode = serializers.CharField()
+    amount = serializers.CharField()
+    bin = serializers.CharField()
+    bank_account = serializers.CharField()
+    bank_name = serializers.CharField()
+
+
      
     

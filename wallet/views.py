@@ -1,11 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework.views import APIView
 from rest_framework import status,permissions
 from rest_framework.response import Response
-from .banks import PaymentFactory
+from .banks import TransactionFactory
 import os
 from rest_framework import generics
-from .serializers import FundWalletSerializer
+from .serializers import *
 from .models import Wallet
 import json
 import requests
@@ -17,21 +17,63 @@ import requests
 class FundWalletView(generics.CreateAPIView):
     serializer_class = FundWalletSerializer
     permission_classes = [permissions.AllowAny]
-    # queryset = Wallet.objects.all()
+    queryset = Wallet.objects.all()
 
-    def perform_create(self, serializer):
+
+    # @staticmethod
+    # def verify_payment(reference_id):
+    #     reference = reference_id
+    #     headers = {
+    #         "Authorization": f"Bearer {os.getenv('PAYSTACK_SECRET_KEY')}",
+    #         "Content-Type": "application/json"
+    #     }
+    #     url = f'https://api.paystack.co/transaction/verify/{reference}'
+    #     response = requests.get(url,headers=headers)
+    #     print(response.json())
+        
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        # serializer = FundWalletSerializer(data=request.data)
         url = 'https://api.paystack.co/transaction/initialize'
+        paystack_secret = 'sk_test_385e0466b47d91a5b8a16112cdcf34af73c077a7'
         headers = {
-            "Authorization": f"Bearer {os.getenv('PAYSTACK_SECRET_KEY')}",
+            "Authorization": f"Bearer {paystack_secret}",
             "Content-Type": "application/json"
         }
         if serializer.is_valid():
+            amount = serializer.data['amount']
             json_data = json.dumps(serializer.data)
             response = requests.post(url, headers=headers, data=json_data)
+        if response.status_code == 200:
+            auth_url = response.json()['data'].get('authorization_url')
+            reference = response.json()['data'].get('reference')
+            # FundWalletView.verify_payment(reference)
+            wallet = Wallet.objects.get(owner=request.user)
+            wallet.balance += amount
+            wallet.save()
+            return redirect(auth_url)
+    
+
+class B2BTransferView(generics.CreateAPIView):
+
+    serializer_class = B2BTranferSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            service_code = serializer.data['serviceCode']
+            data = json.dumps(serializer.data)
+            response = TransactionFactory.transaction_selector(service_code, data)
+            return Response(response, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST )
+            
+
+
+
+
 
             
         
-        
-        
     
-    # def get(self,request):
