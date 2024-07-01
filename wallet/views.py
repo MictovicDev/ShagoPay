@@ -9,7 +9,7 @@ from .serializers import *
 from .models import Wallet
 import json
 import requests
-
+import random
 # Create your views here.
 
 
@@ -56,21 +56,34 @@ class FundWalletView(generics.CreateAPIView):
     
 
 class B2BTransferView(generics.CreateAPIView):
-
     serializer_class = B2BTranferSerializer
     permission_classes = [permissions.AllowAny]
+
+
+  
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            service_code = serializer.data['serviceCode']
-            data = json.dumps(serializer.data)
-            response = TransactionFactory.transaction_selector(service_code, data)
-            return Response(response, status=status.HTTP_200_OK)
-        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST )
+            json_data = json.dumps(serializer.data)
+            response = TransactionFactory.transaction_selector(json_data)
+            print(response.status_code)
+            if response.status_code == 200:
+                data = {
+                    'serviceCode': 'WBB',
+                    'request_id': random._sha512().hexdigest()[0:15],
+                    'reference': response.json().get('reference')
+                }
+                json_data = json.dumps(data)
+                print(json_data)
+                response = TransactionFactory.transaction_selector(json_data) 
+                print(response.json())
+                return Response(response.json(), status=response.status_code)
+            # raise serializers.ValidationError()
             
 
-
+class BuyAirtime(generics.ListCreateAPIView):
+    pass
 
 
 
