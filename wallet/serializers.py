@@ -27,6 +27,13 @@ class B2BTranferSerializer(serializers.Serializer):
     bank_account = serializers.CharField()
     bank_name = serializers.CharField()
 
+class VTUSerializer(serializers.Serializer):
+    serviceCode = serializers.CharField()
+    amount = serializers.CharField()
+    phone = serializers.CharField()
+    vend_type = serializers.CharField()
+    network = serializers.CharField()
+
 
      
     

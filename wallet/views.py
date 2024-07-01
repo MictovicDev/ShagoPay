@@ -10,27 +10,16 @@ from .models import Wallet
 import json
 import requests
 import random
+from .airtime_data import AirtimeDataFactory
 # Create your views here.
-
+import uuid
 
 
 class FundWalletView(generics.CreateAPIView):
     serializer_class = FundWalletSerializer
     permission_classes = [permissions.AllowAny]
     queryset = Wallet.objects.all()
-
-
-    # @staticmethod
-    # def verify_payment(reference_id):
-    #     reference = reference_id
-    #     headers = {
-    #         "Authorization": f"Bearer {os.getenv('PAYSTACK_SECRET_KEY')}",
-    #         "Content-Type": "application/json"
-    #     }
-    #     url = f'https://api.paystack.co/transaction/verify/{reference}'
-    #     response = requests.get(url,headers=headers)
-    #     print(response.json())
-        
+    
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -57,10 +46,8 @@ class FundWalletView(generics.CreateAPIView):
 
 class B2BTransferView(generics.CreateAPIView):
     serializer_class = B2BTranferSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
-
-  
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -71,7 +58,7 @@ class B2BTransferView(generics.CreateAPIView):
             if response.status_code == 200:
                 data = {
                     'serviceCode': 'WBB',
-                    'request_id': random._sha512().hexdigest()[0:15],
+                    'request_id': str(uuid.uuid4()),
                     'reference': response.json().get('reference')
                 }
                 json_data = json.dumps(data)
@@ -82,8 +69,25 @@ class B2BTransferView(generics.CreateAPIView):
             # raise serializers.ValidationError()
             
 
-class BuyAirtime(generics.ListCreateAPIView):
-    pass
+class VTUView(generics.CreateAPIView):
+    serializer_class = VTUSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            print(serializer)
+            data = {
+                'serviceCode': serializer.data['serviceCode'],
+                'amount' : serializer.data['amount'],
+                'phone': serializer.data['phone'],
+                'vend_type': serializer.data['vend_type'],
+                'network': serializer.data['network'],
+                'request_id': str(uuid.uuid4())
+            }
+            json_data = json.dumps(data)
+            response = AirtimeDataFactory.check_transaction_type(json_data)
+            return Response(response.json(), status=response.status_code)
 
 
 
