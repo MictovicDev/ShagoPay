@@ -88,11 +88,6 @@ class TransactionFactory:
             sendmoney = SendMoney()
             response = sendmoney.initialize_transaction(json_data)
             return response
-        if j_son['serviceCode'] == 'WBL':
-            print(j_son)
-            banks = ListBanks()
-            response = banks.initialize_transaction(json_data) 
-            return response
         return None
         
 
