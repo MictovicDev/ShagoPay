@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import requests
 import json
-
+import os
 
 class BankPayment(ABC):
 
@@ -17,9 +17,9 @@ class AccountValidation(BankPayment):
     def initialize_transaction(self, json_data):
         try:
             url = 'http://test.shagopayments.com/public/api/test/b2b'
-            email = 'test@shagopayments.com'
-            password = 'test123'
-            hash_key = 'c1df88d180d0163fc53f4efde6288a2c87a2ceaaefae0685fd4a8c01b217e70d'
+            email = os.getenv('EMAIL')
+            password = os.getenv('PASSWORD')
+            hash_key = os.getenv('HASH_KEY')
             headers = {
                 "Content-Type": "application/json",
                 "email": email,
@@ -39,9 +39,9 @@ class SendMoney(BankPayment):
     def initialize_transaction(self, json_data):
         try:
             url = 'http://test.shagopayments.com/public/api/test/b2b'
-            email = 'test@shagopayments.com'
-            password = 'test123'
-            hash_key = 'c1df88d180d0163fc53f4efde6288a2c87a2ceaaefae0685fd4a8c01b217e70d'
+            email = os.getenv('EMAIL')
+            password = os.getenv('PASSWORD')
+            hash_key = os.getenv('HASH_KEY')
             headers = {
                 "Content-Type": "application/json",
                 "email": email,
@@ -59,9 +59,9 @@ class ListBanks(BankPayment):
     def initialize_transaction(self, json_data):
         try:
             url = 'http://test.shagopayments.com/public/api/test/b2b'
-            email = 'test@shagopayments.com'
-            password = 'test123'
-            hash_key = 'c1df88d180d0163fc53f4efde6288a2c87a2ceaaefae0685fd4a8c01b217e70d'
+            email = os.getenv('EMAIL')
+            password = os.getenv('PASSWORD')
+            hash_key = os.getenv('HASH_KEY')
             headers = {
                 "Content-Type": "application/json",
                 "email": email,
