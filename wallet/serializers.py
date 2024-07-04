@@ -3,13 +3,20 @@ from rest_framework.response import Response
 from .models import FundWallet
 
 
-class FundWalletSerializer(serializers.Serializer):
+{"details":{"ref":"CPL-019283","account":"0724731473","settlementBank":"000014","amount":"10","remark":"This is a test"}} 
+
+
+class PaystackMoneyTransferSerializer(serializers.Serializer):
     transaction_type = serializers.CharField()
     email = serializers.EmailField()
     amount = serializers.IntegerField()
 
 
-class B2BTranferSerializer(serializers.Serializer):
+class AirVendMoneyTransferSerializer(serializers.Serializer):
+    pass
+
+
+class ShagoTranferSerializer(serializers.Serializer):
     serviceCode = serializers.CharField()
     amount = serializers.CharField()
     bin = serializers.CharField()
